@@ -1,0 +1,30 @@
+== Toolchain Demo
+
+[source, bash]
+----
+cd /Users/iulianacosmina/Downloads/jdk25-parent-project
+mvn
+cd /Users/iulianacosmina/Downloads/jdk25-parent-project/toolchains-demo/target
+jar xf toolchains-demo-1.0-SNAPSHOT.jar
+cat /Users/iulianacosmina/Downloads/jdk25-parent-project/toolchains-demo/target/META-INF/MANIFEST.MF
+
+# expect Java SE 8 = 52 (0x34 hex)
+javap -v /Users/iulianacosmina/Downloads/jdk25-parent-project/toolchains-demo/target/classes/org/mytoys/Main.class | grep "major version"
+----
+
+
+=== Java Class Versions
+
+* Java SE 25 = 69 (0x45 hex)
+* Java SE 21 = 67 (0x43 hex)
+* Java SE 21 = 65 (0x41 hex)
+* Java SE 17 = 61 (0x3D hex)
+* Java SE 11 = 55 (0x37 hex)
+* Java SE 8 = 52 (0x34 hex)
+* Java SE 7 = 51 (0x33 hex)
+* Java SE 6.0 = 50 (0x32 hex)
+* Java SE 5.0 = 49 (0x31 hex)
+* JDK 1.4 = 48 (0x30 hex)
+* JDK 1.3 = 47 (0x2F hex)
+* JDK 1.2 = 46 (0x2E hex)
+* JDK 1.1 = 45 (0x2D hex)

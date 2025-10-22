@@ -1,0 +1,50 @@
+== Maven 4.0.0-rc1 Demo
+
+'''
+
+NOTE: Works with at least JDK17.
+
+*IMPORTANT:* Java 17 is only needed to run Maven! You can still compile against older Java versions using the *maven-compiler-plugin* configuration as before. If you need to compile against or use another JDK, see the Guide to Using Toolchains (or the article Introduction to Maven Toolchains by Maven maintainer Maarten Mulders).
+
+
+
+
+=== Notes
+
+Maven is over 20 years old, and is the most widely used build tool in the Java world. Throughout the years, Maven has maintained backward compatibility, especially of its POM(Project Object Model) file with Model version 4.0.0.
+
+Introducing POM 4.1.0.
+
+To “help” Maven find the root folder, you can create a .mvn folder in your root directory.
+This folder is intended to contain project-specific configuration to run Maven, for example a maven.config or jvm.config file, and therefore was also considered as the root folder.
+
+=== The POM
+
+* The POM holds all the information and configuration, which are needed to build the artifact. (name, packaging type, version, etc). After the artifact is created, this build information is not relevant anymore.
+* The POM also contains information, for example, dependencies, which are needed by projects which depend on the artifact. These dependent projects are called the “consumers”.
+
+=== What I Love About Maven
+
+* Consistency
+
+=== What I Hate About Maven
+
+* XML
+* Config files are all named `pom.xml`
+
+
+I am ancient, I have been doing development since we used bash scripts to download dependencies, compile Java projects and run tests.
+
+* Then I discovered https://ant.apache.org[Ant].
+* Then cam https://maven.apache.org[Maven].
+* Then came https://gradle.org/[Gradle].
+* Then came https://github.com/bazelbuild/bazel[Bazel].
+* T[.line-through]##hen came https://xxx[Brazil].##
+
+
+
+
+
+
+
+=== Scenarios
