@@ -25,20 +25,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package org.mytoys.one;
-
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+package org.mytoys.two;
 
 /**
- * @author iulianacosmina on 22/10/2025
+ * @author iulianacosmina on 27/10/2025
  */
-class MainOneTest {
-
-    @Test
-    void testOne(){
-        final var one  = new MainOne("twenty five");
-        assertEquals("TWENTY FIVE", one.version());
+public class MainTwo {
+    static void main() {
+        System.out.println("ChildTwo main  class");
     }
 }

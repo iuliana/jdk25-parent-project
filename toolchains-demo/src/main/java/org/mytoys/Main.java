@@ -4,6 +4,7 @@ package org.mytoys;
 ///      If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3,5,6,9.
 ///     The sum of these multiples is 23.
 ///      Find the sum of all the multiples of 3 or 5 below 1000.
+/// [Math solution](./math_formula_m3_5.png)
 public class Main {
 
     public static void main(String[] args) {
@@ -12,8 +13,9 @@ public class Main {
         int res1 = version1(limit);
         int res2 = version2(limit);
         int res3 = version3(limit);
+        int res4 = version4(limit);
 
-        System.out.println(res1 + " <> " + res2+ " <> " + res3);
+        System.out.println(res1 + " <> " + res2+ " <> " + res3+ " <> " + res4);
     }
 
     public static int version1(final int limit){
@@ -54,7 +56,7 @@ public class Main {
         return sum;
     }
 
-    // TODO why does this take longer ????
+    /// TODO why does this take longer than v1 and v2???
     public static int version3(final int limit){
         long t0 = System.nanoTime();
         final int limit3 = limit/3;
@@ -72,6 +74,25 @@ public class Main {
         }
         long t1 = System.nanoTime();
         System.out.println("version3: Computing time = " + (t1-t0) + "ns");
+        return sum;
+    }
+
+    ///  This is the Math solution
+    /// TODO why does this take longer than than v1 and v2???
+    public static int version4(final int limit){
+        long t0 = System.nanoTime();
+        final int limit3 = (limit-1)/3;
+        final int limit5  = (limit-1)/5;
+        final int limit15  = (limit-1)/15;
+
+        final int sum3 = 3*(limit3*(limit3+1)/2);
+        final int sum5 = 5*(limit5*(limit5+1)/2);
+        final int sum15 = 15*(limit15*(limit15+1)/2);
+
+        final int sum = sum3 + sum5 - sum15;
+
+        long t1 = System.nanoTime();
+        System.out.println("version4: Computing time = " + (t1-t0) + "ns");
         return sum;
     }
 }

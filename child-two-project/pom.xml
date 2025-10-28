@@ -3,15 +3,23 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 http://maven.apache.org/xsd/maven-4.1.0.xsd">
     <modelVersion>4.1.0</modelVersion>
-
     <parent/>
 
-    <artifactId>child-one-project</artifactId>
-    <name> Child One</name>
-    <description>Well, this is awkward. There is not much to say about Child One. </description>
+    <artifactId>child-two-project</artifactId>
+    <name> Child Two</name>
     <packaging>jar</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.5.20</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mytoys</groupId>
+            <artifactId>child-one-project</artifactId>
+            <version>${revision}</version>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -19,22 +27,6 @@
     </dependencies>
 
     <build>
-        <!-- Maven 3 way -->
-        <sourceDirectory>src/code</sourceDirectory>
-        <testSourceDirectory>src/tests</testSourceDirectory>
-
-        <!-- Maven 4 way -->
-        <!--
-        <sources>
-            <source>
-                <scope>main</scope>
-                <directory>src/code</directory>
-            </source>
-            <source>
-                <scope>test</scope>
-                <directory>src/tests</directory>
-            </source>
-        </sources> -->
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -42,7 +34,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>org.mytoys.one.MainOne</mainClass>
+                            <mainClass>org.mytoys.two.MainTwo</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -2,8 +2,6 @@
 
 This project showcases multi-level modules build with Maven  4.0.0-rc1 & Java 25.
 
-Run
-
 [source]
 ====
 mvn

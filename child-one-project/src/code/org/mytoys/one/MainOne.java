@@ -27,9 +27,11 @@ SOFTWARE.
 */
 package org.mytoys.one;
 
-/**
- * @author iulianacosmina on 22/10/2025
- */
+
+///
+/// @author iulianacosmina on 22/10/2025
+/// [Java 1D Array (Part 2)](https://www.hackerrank.com/challenges/java-1d-array/)
+///
 record MainOne(String version) {
     MainOne {
         version = version.toUpperCase();
@@ -40,4 +42,12 @@ record MainOne(String version) {
         IO.println("Hello World from " + mainOne.version());
     }
 
+    // if leap is bigger than array size
+    static boolean jump(int queries, int leap, Integer[] game){
+        int i =0;
+        /*do {
+             // TODO
+        } while (i < game.length -1);*/
+        return true;
+    }
 }

@@ -1,50 +1,148 @@
-== Maven 4.0.0-rc1 Demo
+= Maven 4.0.0-rc1 Demo
 
-'''
+== Introduction
 
-NOTE: Works with at least JDK17.
+Way better than the Alpha version I've showed you 2 years ago.
 
-*IMPORTANT:* Java 17 is only needed to run Maven! You can still compile against older Java versions using the *maven-compiler-plugin* configuration as before. If you need to compile against or use another JDK, see the Guide to Using Toolchains (or the article Introduction to Maven Toolchains by Maven maintainer Maarten Mulders).
+A lot of things have changed since I did one of these, starting with the Logo of The ASF. (Apache Software Foundation)
 
+Apache Maven is a build automation and project management tool primarily used for Java projects, though it can also manage projects in languages like Scala, Kotlin, Groovy, C# and Ruby.
 
+Maven simplifies software development by automating tasks such as compilation, testing, dependency resolution, packaging, and deployment, reducing manual effort and errors.
 
+ I have been doing development since we used bash scripts to download dependencies, compile Java projects and run tests.
 
-=== Notes
-
-Maven is over 20 years old, and is the most widely used build tool in the Java world. Throughout the years, Maven has maintained backward compatibility, especially of its POM(Project Object Model) file with Model version 4.0.0.
-
-Introducing POM 4.1.0.
-
-To “help” Maven find the root folder, you can create a .mvn folder in your root directory.
-This folder is intended to contain project-specific configuration to run Maven, for example a maven.config or jvm.config file, and therefore was also considered as the root folder.
-
-=== The POM
-
-* The POM holds all the information and configuration, which are needed to build the artifact. (name, packaging type, version, etc). After the artifact is created, this build information is not relevant anymore.
-* The POM also contains information, for example, dependencies, which are needed by projects which depend on the artifact. These dependent projects are called the “consumers”.
-
-=== What I Love About Maven
-
-* Consistency
-
-=== What I Hate About Maven
-
-* XML
-* Config files are all named `pom.xml`
-
-
-I am ancient, I have been doing development since we used bash scripts to download dependencies, compile Java projects and run tests.
-
-* Then I discovered https://ant.apache.org[Ant].
+* Then I discovered https://ant.apache.org[Ant]. (Another Neat Tool)
 * Then cam https://maven.apache.org[Maven].
 * Then came https://gradle.org/[Gradle].
 * Then came https://github.com/bazelbuild/bazel[Bazel].
-* T[.line-through]##hen came https://xxx[Brazil].##
+* [.line-through]##Then came https://xxx[Brazil].##
 
+Maven is over 20 years old, and is the most widely used build tool in the Java world. Throughout the years, Maven has maintained backward compatibility, especially of its POM(Project Object Model) file with Model version 4.0.0.
 
+* The POM holds all the information and configuration, which are needed to build the artifact. (name, packaging type, version, etc). After the artifact is created, this build information is not relevant anymore.
+* The POM also contains information, for example, dependencies, which are needed by projects which depend on the artifact (what we call transitive dependencies). These dependent projects are called the “consumers”.
 
+Those dependencies have to come from somewhere, so enter  Maven Central and other public repositories.
+This makes Maven more than a tool, Maven is an ecosystem with many dependencies on the POM, especially the Maven Central repository, other build tools, and IDEs.
 
+The POM thus models an artifact identity, behaviour and needs, who produced it, how and in which context can be used, and so much more.
 
+Any participant that wants to benefit from the richness of this ecosystem must abide by the POM's schema. And this has caused Maven to stall in its development. Because any change to its schema would cause huge ripples in the said ecosystem.
 
+We owe Apache Maven the current project structure, the versioning system, the definition  of libraries identity (based on artifactId, groupId and version) and the idea of a centralized hub where to get them from during build time.
 
-=== Scenarios
+However, sometimes things need an upgrade, and so do your users.
+
+So let's list/discuss what Maven 4 has in store for us.
+
+Maven 4 is not released officially yet. I am working on Release Candidate 1. Things might still change until release.
+
+'''
+
+== Maven 3 | Maven 4  phases
+
+[source]
+----
+# Maven 3
+> mvn help:describe -Dcmd=compile
+It is a part of the lifecycle for the POM packaging 'pom'. This lifecycle includes the following phases:
+* validate: Not defined
+* initialize: Not defined
+* generate-sources: Not defined
+* process-sources: Not defined
+* generate-resources: Not defined
+* process-resources: Not defined
+* compile: Not defined
+* process-classes: Not defined
+* generate-test-sources: Not defined
+* process-test-sources: Not defined
+* generate-test-resources: Not defined
+* process-test-resources: Not defined
+* test-compile: Not defined
+* process-test-classes: Not defined
+* test: Not defined
+* prepare-package: Not defined
+* package: Not defined
+* pre-integration-test: Not defined
+* integration-test: Not defined
+* post-integration-test: Not defined
+* verify: Not defined
+* install: org.apache.maven.plugins:maven-install-plugin:3.1.2:install
+* deploy: org.apache.maven.plugins:maven-deploy-plugin:3.1.2:deploy
+----
+
+[source]
+----
+# Maven 4
+> mvn help:describe -Dcmd=compile
+
+[INFO] 'compile' is a phase within the 'default' lifecycle, which has the following phases:
+* before:all: Not defined
+* before:initialize: Not defined
+* before:validate: Not defined
+* validate: Not defined
+* after:validate: Not defined
+* initialize: Not defined
+* after:initialize: Not defined
+* before:build: Not defined
+* before:sources: Not defined
+* sources: Not defined
+* after:sources: Not defined
+* before:resources: Not defined
+* resources: Not defined
+* after:resources: Not defined
+* before:compile: Not defined
+* compile: Not defined
+* after:compile: Not defined
+* before:ready: Not defined
+* ready: Not defined
+* after:ready: Not defined
+* before:test-sources: Not defined
+* test-sources: Not defined
+* after:test-sources: Not defined
+* before:test-resources: Not defined
+* test-resources: Not defined
+* after:test-resources: Not defined
+* before:test-compile: Not defined
+* test-compile: Not defined
+* after:test-compile: Not defined
+* before:test: Not defined
+* test: Not defined
+* after:test: Not defined
+* before:unit-test: Not defined
+* unit-test: Not defined
+* after:unit-test: Not defined
+* before:package: Not defined
+* package: Not defined
+* after:package: Not defined
+* build: Not defined
+* after:build: Not defined
+* before:verify: Not defined
+* before:integration-test: Not defined
+* integration-test: Not defined
+* after:integration-test: Not defined
+* verify: Not defined
+* after:verify: Not defined
+* before:install: Not defined
+* install: Not defined
+* after:install: Not defined
+* before:deploy: Not defined
+* deploy: Not defined
+* after:deploy: Not defined
+* all: Not defined
+* after:all: Not defined
+----
+
+== `mvnd` show-off
+
+`mvnd` is building your modules in parallel using multiple CPU cores.
+
+[source, bash]
+----
+cd /Users/iulianacosmina/Downloads/jdk25-parent-project
+mvn
+# Total time:  1.222 s
+mvnd
+# Total time:  0.706 s (Wall Clock)
+----

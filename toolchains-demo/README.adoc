@@ -2,14 +2,14 @@
 
 [source, bash]
 ----
-cd /Users/iulianacosmina/Downloads/jdk25-parent-project
+cd /Users/iulianacosmina/Downloads/jdk25-parent-project/toolchains-demo
 mvn
-cd /Users/iulianacosmina/Downloads/jdk25-parent-project/toolchains-demo/target
+cd target
 jar xf toolchains-demo-1.0-SNAPSHOT.jar
-cat /Users/iulianacosmina/Downloads/jdk25-parent-project/toolchains-demo/target/META-INF/MANIFEST.MF
+cat META-INF/MANIFEST.MF
 
 # expect Java SE 8 = 52 (0x34 hex)
-javap -v /Users/iulianacosmina/Downloads/jdk25-parent-project/toolchains-demo/target/classes/org/mytoys/Main.class | grep "major version"
+javap -v classes/org/mytoys/Main.class | grep "major version"
 ----
 
 

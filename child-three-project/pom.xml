@@ -6,10 +6,8 @@
 
     <parent/>
 
-    <artifactId>child-one-project</artifactId>
-    <name> Child One</name>
-    <description>Well, this is awkward. There is not much to say about Child One. </description>
-    <packaging>jar</packaging>
+    <artifactId>child-three-project</artifactId>
+    <name> Child Three</name>
 
     <dependencies>
         <dependency>
@@ -18,23 +16,25 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <!-- Maven 3 way -->
-        <sourceDirectory>src/code</sourceDirectory>
-        <testSourceDirectory>src/tests</testSourceDirectory>
+    <profiles>
+        <profile>
+            <id>full</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>limited</id>
+            <activation>
+                <condition>${java.version} == "25"</condition>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+    </profiles>
 
-        <!-- Maven 4 way -->
-        <!--
-        <sources>
-            <source>
-                <scope>main</scope>
-                <directory>src/code</directory>
-            </source>
-            <source>
-                <scope>test</scope>
-                <directory>src/tests</directory>
-            </source>
-        </sources> -->
+    <build>
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -42,7 +42,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>org.mytoys.one.MainOne</mainClass>
+                            <mainClass>org.mytoys.three.MainThree</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
