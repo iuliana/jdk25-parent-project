@@ -2,10 +2,10 @@
 
 [source, bash]
 ----
-cd /Users/iulianacosmina/Downloads/jdk25-parent-project/toolchains-demo
-mvn
-cd target
-jar xf toolchains-demo-1.0-SNAPSHOT.jar
+cd /Users/iulianacosmina/sandbox/jdk25-parent-project
+mvn clean install
+cd toolchains-demo/target
+jar xf toolchains-demo-2.0-SNAPSHOT.jar
 cat META-INF/MANIFEST.MF
 
 # expect Java SE 8 = 52 (0x34 hex)

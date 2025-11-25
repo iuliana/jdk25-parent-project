@@ -15,3 +15,10 @@ Because the project is declared with
 ====
 
 All the demo sessions are grouped link:demos[here].
+
+
+== TODO
+
+* Solve the task problem using approximate minimums method
+* Solve the letters problem
+* Play with JSTL

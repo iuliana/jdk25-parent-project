@@ -28,16 +28,25 @@ SOFTWARE.
 package org.mytoys;
 
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.logging.Logger;
+import org.junit.platform.commons.logging.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author iulianacosmina on 28/10/2025
  */
-public class threeMainThreeTest {
+public class ThreeMainThreeTest {
+    private final static Logger LOGGER = LoggerFactory.getLogger(ThreeMainThreeTest.class);
 
     @Test
     public void test() {
+        LOGGER.info(() -> """
+        >>>> running ThreeMainThreeTest#test
+            because the limited profile
+            has been activated.
+            Yeey!
+        """);
         assertTrue(true);
     }
 }

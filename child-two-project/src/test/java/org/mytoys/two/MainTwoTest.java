@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 
 import java.security.SecureRandom;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * @author iulianacosmina on 28/10/2025
  */
@@ -43,10 +45,15 @@ public class MainTwoTest {
     void buildLogTest() {
         var random = new SecureRandom();
         int rnd = random.nextInt();
-        if (rnd %2 ==0 ){
-            logger.error("This is unfortunate.");
-        } else {
-            logger.debug("This is not that unfortunate.");
-        }
+        logger.error("This is unfortunate.");
+        //logger.debug("This is not that unfortunate.");
+
+        //assertTrue(false);
+        // old style
+        //mvn --resume-from :child-two-project
+        //mvn -rf :child-two-project
+        // new style
+        // mvn -r
+        // mvn 0-r --also-make :child-three-project   #this does not work
     }
 }

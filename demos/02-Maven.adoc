@@ -1,0 +1,62 @@
+= Maven 4.0.0-rc1 Demo - Part 2
+
+== Slide 5: Toolchains example  - updated
+
+Issue cause: Managed to change my default goal form `clean install` to `verify`.
+
+[source, bash]
+----
+cd /Users/iulianacosmina/sandbox/jdk25-parent-project
+mvn clean install
+cd toolchains-demo/target
+jar xf toolchains-demo-2.0-SNAPSHOT.jar
+cat META-INF/MANIFEST.MF
+
+# expect Java SE 8 = 52 (0x34 hex)
+javap -v classes/org/mytoys/Main.class | grep "major version"
+----
+
+Expect:
+
+* Java SE 17 = 61 (0x3D hex)
+* Java SE 11 = 55 (0x37 hex)
+* Java SE 8 = 52 (0x34 hex)
+
+==  Slide 16: No version needed for dependencies in the same project
+
+Slide 16: file:///Users/iulianacosmina/sandbox/jdk25-parent-project/child-two-project/pom.xml[no-version]
+
+==  Slide 17: Resume from
+
+Break file:///Users/iulianacosmina/sandbox/jdk25-parent-project/child-two-project/src/test/java/org/mytoys/two/MainTwoTest.java[MainTwoTest.java]
+
+== Slide 19: Non-existent Profiles
+
+[source,bash]
+----
+cd /Users/iulianacosmina/sandbox/jdk25-parent-project/child-three-project
+
+mvn compile -Pfull
+
+mvn compile -Pnope
+
+mvn compile -P\?nope
+----
+
+== Slide 20: Conditional Profiles
+
+[source, bash]
+----
+mvn  # test log
+mvn -Drevision=1.0-SNAPSHOT
+----
+
+== Slide 24: `mvnd`
+
+The `mvnd` client is a native executable built using GraalVM (is a high-performance JDK,  by compiling Java applications ahead of time into a native binary).
+If your project is organized more like a graph than a tree, `mvnd` might have some issues. But, it can also help you discover the problematic dependencies within your project using
+
+[source, bash]
+----
+ mvnd  -Dsmartbuilder.profiling=true
+----

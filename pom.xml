@@ -13,13 +13,6 @@
     <name>JDK25 and Maven 4 Project</name>
     <description>My Java  25 toy projects</description>
 
-   <!-- <subprojects>  finally, to avoid confusion with Java modules
-        <subproject>child-one-project</subproject>
-        <subproject>child-two-project</subproject>
-        <subproject>child-three-project</subproject>
-        <subproject>toolchains-demo</subproject>
-    </subprojects>-->
-
     <properties>
         <java.version>25</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -39,7 +32,8 @@
     </dependencyManagement>
 
     <build>
-        <defaultGoal>verify</defaultGoal>
+        <!-- <defaultGoal>verify</defaultGoal> -->
+        <defaultGoal>clean install</defaultGoal>
         <pluginManagement>
             <plugins>
                 <plugin>
