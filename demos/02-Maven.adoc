@@ -51,7 +51,7 @@ mvn  # test log
 mvn -Drevision=1.0-SNAPSHOT
 ----
 
-== Slide 24: `mvnd`
+== Slide 25: `mvnd`
 
 The `mvnd` client is a native executable built using GraalVM (is a high-performance JDK,  by compiling Java applications ahead of time into a native binary).
 If your project is organized more like a graph than a tree, `mvnd` might have some issues. But, it can also help you discover the problematic dependencies within your project using
@@ -60,3 +60,7 @@ If your project is organized more like a graph than a tree, `mvnd` might have so
 ----
  mvnd  -Dsmartbuilder.profiling=true
 ----
+
+== TODO
+
+How to use `mvnd` in IntelliJ IDEA

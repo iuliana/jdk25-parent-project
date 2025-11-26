@@ -18,7 +18,6 @@
         <dependency>
             <groupId>org.mytoys</groupId>
             <artifactId>child-one-project</artifactId>
-          <!-- <version>${revision}</version>-->
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
