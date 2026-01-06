@@ -1,0 +1,172 @@
+= Java 26 Demo - Part 1
+
+To explain why scoped variables are useful and necessary, I need to introduce 3 concepts:
+
+* Thread Local
+* Platform threads
+* Virtual Threads
+
+- Does anybody know what `ThreadLocal`how it is being used is ?
+
+== JEP-506
+
+=== Platform Threads
+
+A *platform thread* is implemented as a thin wrapper around an operating system (OS) thread.
+A platform thread runs Java code on its underlying OS thread, and the platform thread captures its OS thread for the platform thread's entire lifetime.
+Consequently, the number of available platform threads is limited to the number of OS threads.
+
+Platform threads typically have a large thread stack and other resources that are maintained by the operating system. They are suitable for running all types of tasks, but they are *a limited resource*.
+
+Who defines these limits?
+
+The number of CPU cores and memory of course. For this reason alone, `ThreadPoolExecutors` were introduced, to recycle the threads scaffolding.
+
+=== Virtual Thread
+
+A *virtual thread* isn't tied to a specific OS thread. A virtual thread still runs code on an OS thread. However, when code running in a virtual thread calls a blocking I/O operation, the Java runtime suspends the virtual thread until it can be resumed. The OS thread associated with the suspended virtual thread is now free to perform operations for other virtual threads.
+
+-- Discuss the image here
+
+The operating system schedules when a platform thread is run. However, the Java runtime schedules when a virtual thread is run.
+
+-- Does anybody know what a carrier thread is? Any guesses ?
+
+------
+When the Java runtime schedules a virtual thread, it assigns or mounts the virtual thread on a platform thread - called a carrier - then the operating system schedules that platform thread as usual.
+The JVM maintains a pool of platform threads, created and maintained by a dedicated `ForkJoinPool`. Initially, the number of platform threads equals the number of CPU cores, and it cannot increase more than 256.
+For each created virtual thread, the JVM schedules its execution on a platform thread, temporarily copying the stack chunk for the virtual thread from the heap to the stack of the platform thread. The platform thread becomes the carrier thread of the virtual thread.
+------
+
+Essentially, virtual threads are implemented in a similar way to virtual memory. To simulate a lot of memory, an operating system maps a large virtual address space to a limited amount of RAM. Similarly, to simulate a lot of threads, the Java runtime maps a large number of virtual threads to a small number of OS threads.
+
+*Unlike platform threads*, virtual threads typically have a shallow call stack, performing simple operations - as a single HTTP client call or a single JDBC query.
+Virtual threads are suitable for running tasks that spend most of the time blocked (fire-and-forget), often waiting for I/O operations to complete. However, they aren't intended for long-running CPU-intensive operations. If you want to use virtual threads for decoding the human genome, that's not gonna work.
+
+Although virtual threads support thread-local variables and inheritable thread-local variables, you should carefully consider using them because a single JVM might support millions of virtual threads.
+
+Alex asked me, exactly how many?
+
+Heap sizes
+Initial heap size of 1/64 of physical memory up to 1Gbyte  ~ 576 MB
+Maximum heap size of 1/4 of physical memory up to 1Gbyte ~ 1GB
+
+Reference sizes:
+
+Typically, references are implemented as pointers, 8 bytes ( on a 64-bit)
+
+[source]
+----
+-XX:InitialHeapSize=603979776 ~576
+-XX:MaxHeapSize=9663676416 ~ 9216
+-XX:MinHeapSize=6815736
+----
+
+
+=== Thread Local
+
+`ThreadLocal` can be considered as a scope of access, like a *request scope* or *session scope*. It's a *thread scope*. You can set any object in `ThreadLocal` and this object will be:
+* *Global* across the thread call chain (on all method invoked in the context of a thread)
+* *Local* to the specific thread which is accessing this object
+
+With `ThreadLocal` you can create variables that can only be read and written by the same thread. Thus, even if two threads are executing the same code, and the code has a reference to the same `ThreadLocal` variable, the two threads cannot see each other's `ThreadLocal` variables.
+
+-- Mention here that I've never seen ThreadLocal used until about 8 years into my Software dev career.
+
+* file:///Users/iulianacosmina/sandbox/jdk25-parent-project/child-three-project/src/main/java/org/mytoys/three/tlocal/ThreadLocalTest.java[Typical example]
+* file:///Users/iulianacosmina/sandbox/jdk25-parent-project/child-three-project/src/main/java/org/mytoys/three/tlocal/PiggyBankTest.java[Better example]
+
+Alternative to `ThreadLocal` variables is *synchronization*, but what does synchronization do?
+
+-- count to 5
+
+Blocks treads and slows down execution. We do not want that.
+
+Design flaws:
+
+* every thread-local variable is mutable and enables any code to call the setter method at any time - within the confines of the thread execution, but still.
+* the data is retained for the complete lifetime of the thread or until the thread calls the `remove` method. In case a developer forgets to call the remove method, the data will be retained in memory longer than necessary.
+* thread-local variables of a parent thread can be inherited by child threads. When we create a child thread that inherits thread-local variables, the new thread will need to allocate additional storage for all parent thread-local variables. (Class `InheritableThreadLocal` mediates this because grants access to values to a thread and all child threads created by that thread)
+
+=== Scoped values
+
+Because of the three design flaws listed above, and the performance issues - having millions of threads each with their `ThreadLocal` variable could eat up memory fast - `ThreadLocal` variables should be avoided.
+So how else can we share the state of some variable across the callchain of a virtual stack then?
+
+Well, *scoped variables*.
+Scoped values enable a method to share immutable data both with its callees within a thread, and with child threads.
+Scoped values are easier to reason about than thread-local variables. They also have lower space and time costs, especially when used together with virtual threads and structured concurrency.
+
+A *Scoped Value* is a value that is set once and is then available for reading for a bounded period of execution by a thread.
+
+Scoped variables are immutable, so how can I re-write the `PiggyBankDemo` example to use scoped values and still work?
+
+/Users/iulianacosmina/sandbox/jdk25-parent-project/child-three-project/src/main/java/org/mytoys/three/scoped/PiggyBankDemo.java[Like this.]
+
+=== Use cases
+
+It is a common pattern in large Java programs to transfer control from one component (a "framework") to another ("application code") and then back.
+
+* Maintaining user sessions in web applications. (Spring Security)
+* Managing database connections in thread pools. (JDBC)
+* Storing transaction-specific data in distributed systems. (JPA)
+
+== JEP-505: Structured Concurrency (Fifth Preview)
+
+Structured Concurrency (Fifth Preview) is in its 5th preview in Java 25. Work started in Java 19.
+
+Structured concurrency treats groups of related tasks running in different threads as a single unit of work, thereby streamlining error handling and cancellation, improving reliability, and enhancing observability.
+
+You can configure now this group of tasks and decide:
+- should it fail, if at least on task fails
+- should it fail, only if all fail
+- should it pass, if at least one task passes
+
+The syntax is way more pleasant than writing typical code using the Thread API because it hides away the concurrency boilerplate code. Also, it promotes a style of concurrent programming that can eliminate common risks arising from cancellation and shutdown, such as thread leaks and cancellation delays. (We already have Executors, why is this needed? Because cancellations need to be handled manually.)
+
+The principal class of the structured concurrency API is `StructuredTaskScope` in the `java.util.concurrent` package. This class enables you coordinate a group of concurrent subtasks as a unit. It forces a hierarchy of tasks and subtasks and this the code you write reflects the relationship between tasks subtasks, which leads to more readable, maintainable, and reliable concurrent code.
+
+In summary, virtual threads deliver an abundance of threads. Structured concurrency can correctly and robustly coordinate them, and enables observability tools to display threads as they are understood by developers.
+
+* With a `StructuredTaskScope` instance, you _fork_ each subtask, which runs them in their own individual thread (Virtual thread, that is).
+
+* After, you _join_ them as a unit. As a result, the _StructuredTaskScope_ ensures that the subtasks are completed before the main task continues.
+
+* _joinUntil(..) can be used to specify a deadline. When specified a time duration using `Instant`, `joinUntil()` method waits until:
+
+* All threads started in the task scope have finished execution
+* The `scope.shutdown()` method is invoked
+* The current thread is interrupted
+* Or, the deadline is reached
+
+* `ShutdownOnSuccess` captures the first result and shuts down the task scope to interrupt unfinished threads and wakeup the owner. This class is intended for cases where the results of all subtasks are required (“invoke all”); if any subtask fails then the results of other unfinished subtasks are no longer needed. If defines methods to throw an exception if any of the subtasks fail
+
+* `ShutdownOnFailure` captures the first exception and shuts down the task scope.
+
+* Since, the `StructuredTaskScope` class implements `AutoCloseable`, it is recommended to open a scope in a `try-with-resources` block.
+
+* Task scopes form a tree where parent-child relations are *established implicitly* when opening a new task scope.
+
+* Task scopes can be opened from inside other tasks scope and this leads to a tree like structure where the enclosing tasks scope becomes the parent of newly created task scope.
+
+*What is new in Java 25*
+
+* A `StructuredTaskScope is now opened via static factory methods rather than public constructors.
+* The zero-parameter `open` factory method covers the common case by creating a `StructuredTaskScope` that waits for all subtasks to succeed or any subtask to fail.
+* Other policies and outcomes can be implemented by providing an appropriate `Joiner` to one of the richer open factory methods.
+
+=== How is it different from Future, Callable,ExecutorService, ThreadPools, CompletableFuture etc
+
+Structured concurrency and Java’s existing concurrency mechanisms both aim to manage concurrent tasks, but they do so in different ways and have distinct advantages and disadvantages.
+
+Advantages:
+
+- *hierarchical organization of tasks* - parent-child relationship is enforced, parents must wait for child tasks to complete to finish
+- parent tasks waits for children and cleans up after them, *better resource management* and *resource leaks avoidance*
+- *no orphaned tasks* - child tasks complete before parents
+- *easier error handling* - error handling and propagation is more straightforward, as errors can be handled and propagated withing task hierarchy
+
+> *NOTE:* This implementation looks a lot like our Brooklyn Tasks, only our are more powerful. :D
+
+> *GOAL and Anti-GOALS*: Does not aim to replace `Executors` or other concurrency classes, just add a new, simple way to write code to
+organize and manage concurrent tasks.

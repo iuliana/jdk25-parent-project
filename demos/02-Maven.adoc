@@ -63,4 +63,4 @@ If your project is organized more like a graph than a tree, `mvnd` might have so
 
 == TODO
 
-How to use `mvnd` in IntelliJ IDEA
+How to use `mvnd` in IntelliJ IDEA.
